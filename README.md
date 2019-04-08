@@ -8,5 +8,5 @@ For this project, I will use the Bike vendors data set to see how the models of 
 
 There are 4 folders: the dataset, original codes, and visualizations, and project report with conclusion on findings.
 
-#Dataset Summary
+##Dataset Summary
 The Bike Vendor dataset includes 35 variables and 97 observations. 
