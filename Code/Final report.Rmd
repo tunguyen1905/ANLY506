@@ -1,0 +1,112 @@
+---
+title: "ANLY506 Final Report"
+author: "Tu Nguyen"
+date: "4/16/2019"
+output: 
+  html_document:
+    code_folding: hide 
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Bike Vendors Project Executive Summary 
+The Bike Vendor dataset contains 97 observations and 35 variables. It provides 4 types of information: the bike usage, frame materials, price, and distribution of all models going by each vendor (which might represents as either the percentage of inventory held or the percentage of sales contribution). The objective of this project is to break down the data to gain insights into (1) price variation between 97 models, and (2) models distribution across 30 vendors. 
+
+The data visualization will also be integrated into the project to examine the correlativity between different parameters. 
+
+#Research Questions
+1. Which models are the cheapest and most expensive? 
+2. What is the relationship between price and different bike types? (price versus variables category 1, category 2, and frame)
+3. Which types of bikes are most popular if being grouped by category 1, category 2, and frame?
+4. Which models are most popular across 30 vendors? 
+
+#Loading packages and data
+
+```{r echo=FALSE}
+
+library(readr)
+library(ggplot2)
+library(cluster)
+library(dplyr)
+library(clustertend)
+
+```
+
+```{r}
+library(readr)
+bikevendors <- read_csv("/Users/tunguyen/Downloads/bikeVendors.csv")
+dim(bikevendors)
+```
+The dataset contains 97 observations, 35 varibles and no missing values. 
+Below is the sneak peek of the raw data structure. 
+```{r}
+head(bikevendors)
+```
+##List of variables
+```{r}
+colnames(bikevendors)
+```
+
+##Answer to question 1
+```{r}
+summary(bikevendors$price)
+```
+The cheapest bike costs $415, while the most expensive one is $12,790,  
+
+```{r}
+df1<- select(bikevendors, model, category1, category2, frame, price)
+subset(df1, price==415 |
+         price==12790)
+```
+It can be seen the cheapest model is Catalyst 4, whereas Scalpel-Si Black Inc. and Supersiz Evo Black Inc. are the most expensive ones. 
+
+##Answer to question 2
+
+```{r message=FALSE}
+g1<- ggplot(bikevendors, aes(x=price))
+g1+ geom_histogram(aes(fill=price)) + ggtitle("Figure 1: Price range distribution") +
+  xlab("Price") + ylab("Frequency") +
+  theme_bw()
+```
+Figure 1 shows that most of the bikes fall within the price range of $2,000 to about $3,000. 
+
+```{r message=FALSE}
+g2<- ggplot(bikevendors, aes(x=frame, y= price, fill=frame))
+g2 + geom_boxplot(aes(fill=price)) +
+  ggtitle("Figure 2: Price versus Bike Frame")+
+  theme_bw()
+```
+
+Besides that there are more models made with carbon, bikes with carbon frame are generally more expensive than aluminum ones. 
+```{r message=FALSE}
+g3<- ggplot(bikevendors, aes(x=category1, y= price, fill=category1))
+g3 + geom_boxplot(aes(fill=price)) +
+  ggtitle("Figure 3: Price versus Category 1")+
+  theme_bw()
+```
+Figure 3 shows that despite the outliers, the average price of mountain bikes are slighly more expensive than of road bikes. 
+
+```{r message=FALSE}
+g4<- ggplot(bikevendors, aes(x=category2, y= price, fill=category2))
+g4 + geom_boxplot(aes(fill=price)) +
+  ggtitle("Figure 3: Price versus Category 2")+
+  theme_bw()
+```
+Among all bikes within category 2, Cross Country Road bikes have the highest average price compared to the other 8.
+
+##Answer to question 3 
+```{r message=FALSE}
+bike<- bikevendors %>% group_by(category1, category2) %>% summarize(count = n()) %>% arrange(count)
+bike
+```
+
+We learn that Elite Road is the most popular type of bike, with a total of 21 counts. 
+
+```{r message=FALSE}
+g4<- ggplot(bikevendors, aes(category1, fill= category2))
+g4+geom_bar(aes()) + ggtitle("Figure 4: Distribution of bike types")
+```
+
